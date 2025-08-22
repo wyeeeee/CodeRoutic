@@ -16,6 +16,12 @@ src/
 ├── lib.rs                # 库模块声明
 ├── main.rs               # 主入口点
 ├── router/               # 路由模块
+│   ├── plugin/           # 路由检查插件
+│   │   ├── long_context_check.rs     # 长上下文检查
+│   │   ├── subagent_model_check.rs   # 子代理模型检查
+│   │   ├── background_model_check.rs # 后台模型检查
+│   │   ├── think_model_check.rs      # 思考模型检查
+│   │   └── web_search_check.rs       # 网络搜索检查
 │   ├── route_handler.rs  # 路由处理器
 │   └── route_logic.rs    # 路由逻辑
 ├── server/               # 服务器模块
@@ -41,6 +47,8 @@ src/
 
 ### router 模块
 实现请求路由逻辑，根据配置将请求分发到不同的模型提供商。
+
+路由模块采用了插件化架构，每个路由检查逻辑都是一个独立的插件，方便扩展新的路由规则。详细信息请参阅 [router 模块文档](docs/router.md)。
 
 ### server 模块
 基于 axum 框架构建的 Web 服务器，处理 HTTP 请求。
