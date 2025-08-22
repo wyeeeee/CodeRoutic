@@ -7,7 +7,7 @@ target/
 
 # Environment
 .env
-
+.claude/
 # IDE
 .vscode/
 .idea/
