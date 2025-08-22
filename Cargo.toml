@@ -9,7 +9,7 @@ path = "src/bin/ccr.rs"
 
 [dependencies]
 # Web框架
-axum = "0.7"
+axum = "0.8.4"
 tokio = { version = "1.0", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -17,11 +17,25 @@ serde_json = "1.0"
 tracing = "0.1"
 tracing-subscriber = "0.3"
 # 配置文件处理
-config = "0.14"
+config = "0.15.14"
 # 环境变量处理
 dotenv = "0.15"
 # HTTP客户端
 reqwest = { version = "0.12", features = ["json"] }
 # 工具库
 anyhow = "1.0"
-thiserror = "1.0"
+thiserror = "2.0.16"
+# 系统目录
+dirs = "6.0.0"
+# 时间处理
+chrono = { version = "0.4", features = ["serde"] }
+# Ctrl+C处理
+ctrlc = "3.4"
+# 系统库
+libc = "0.2"
+# 正则表达式
+regex = "1.0"
+
+[dev-dependencies]
+# 测试框架
+tempfile = "3.0"
