@@ -1,4 +1,4 @@
-use crate::core::constants::*;
+use crate::config::constants::*;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::sync::Mutex;

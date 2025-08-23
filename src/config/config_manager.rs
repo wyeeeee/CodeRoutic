@@ -1,5 +1,5 @@
 use crate::config::types::Config;
-use crate::core::constants::*;
+use crate::config::constants::*;
 use anyhow::{Context, Result};
 use serde_json;
 use std::fs;

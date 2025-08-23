@@ -6,3 +6,6 @@ mod config_tests {
         assert!(true);
     }
 }
+
+#[cfg(test)]
+mod claude_endpoint_tests;

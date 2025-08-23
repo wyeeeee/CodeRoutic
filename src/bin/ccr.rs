@@ -3,7 +3,7 @@ use std::process;
 use tokio;
 
 use code_routic::config::config_manager::ConfigManager;
-use code_routic::server::server_setup::ServerSetup;
+use code_routic::server::server::ServerSetup;
 use code_routic::utils::process_checker::{is_service_running, save_pid, cleanup_pid_file, get_service_pid};
 
 #[tokio::main]

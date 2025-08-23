@@ -1,2 +1,2 @@
-pub mod api_handlers;
-pub mod server_setup;
+pub mod middleware;
+pub mod server;

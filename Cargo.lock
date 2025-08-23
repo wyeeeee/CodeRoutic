@@ -229,11 +229,14 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "axum",
+ "bytes",
  "chrono",
  "config",
  "ctrlc",
  "dirs",
  "dotenv",
+ "http-body-util",
+ "hyper",
  "libc",
  "regex",
  "reqwest",
@@ -242,6 +245,7 @@ dependencies = [
  "tempfile",
  "thiserror",
  "tokio",
+ "tower",
  "tracing",
  "tracing-subscriber",
 ]

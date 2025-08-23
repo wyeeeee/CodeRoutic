@@ -10,9 +10,6 @@ src/
 ├── config/               # 配置管理模块
 │   ├── config_manager.rs # 配置管理器
 │   └── types.rs          # 配置相关类型定义
-├── core/                 # 核心模块
-│   ├── constants.rs      # 常量定义
-│   └── error.rs          # 错误处理
 ├── lib.rs                # 库模块声明
 ├── main.rs               # 主入口点
 ├── router/               # 路由模块
