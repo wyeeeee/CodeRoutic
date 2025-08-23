@@ -1,6 +1,6 @@
 use code_routic::transformers::{
-    providers::{OpenAITransformer, AnthropicTransformer, GeminiTransformer, TransformerFactory},
-    provider_trait::ProviderTransformer,
+    providers::{OpenAITransformer, AnthropicTransformer, GeminiTransformer, ProviderTransformer},
+    TransformerManager,
     error::TransformerResult,
 };
 use serde_json::{json, Value};
@@ -373,7 +373,7 @@ fn test_gemini_response_to_universal() {
 
 #[test]
 fn test_cross_provider_conversion() {
-    let factory = TransformerFactory::new();
+    let manager = TransformerManager::new();
     
     let openai_request = json!({
         "model": "gpt-4",
@@ -383,12 +383,9 @@ fn test_cross_provider_conversion() {
         "tool_choice": "auto"
     });
     
-    // Convert OpenAI -> Universal -> Anthropic
-    let openai_transformer = factory.get_transformer("openai").unwrap();
-    let anthropic_transformer = factory.get_transformer("anthropic").unwrap();
-    
-    let universal_request = openai_transformer.to_universal_request(&openai_request).unwrap();
-    let anthropic_request = anthropic_transformer.from_universal_request(&universal_request).unwrap();
+    // Convert OpenAI -> Universal -> Anthropic using new manager interface
+    let universal_request = manager.to_universal_request("openai", &openai_request).unwrap();
+    let anthropic_request = manager.from_universal_request("anthropic", &universal_request).unwrap();
     
     // Verify the conversion preserved key information
     // Note: model name may change based on provider defaults
@@ -402,7 +399,7 @@ fn test_cross_provider_conversion() {
 
 #[test]
 fn test_stream_chunk_conversion() {
-    let factory = TransformerFactory::new();
+    let manager = TransformerManager::new();
     
     let openai_stream_chunk = json!({
         "id": "chatcmpl-123",
@@ -419,8 +416,7 @@ fn test_stream_chunk_conversion() {
         }]
     });
     
-    let transformer = factory.get_transformer("openai").unwrap();
-    let universal_chunk = transformer.to_universal_stream_chunk(&openai_stream_chunk).unwrap();
+    let universal_chunk = manager.to_universal_stream_chunk("openai", &openai_stream_chunk).unwrap();
     
     assert_eq!(universal_chunk.id, "chatcmpl-123");
     assert_eq!(universal_chunk.object, "chat.completion.chunk");
@@ -433,27 +429,36 @@ fn test_stream_chunk_conversion() {
 }
 
 #[test]
-fn test_factory_functionality() {
-    let factory = TransformerFactory::new();
+fn test_manager_functionality() {
+    let manager = TransformerManager::new();
     
     // Test that all expected providers are available
-    assert!(factory.has_provider("openai"));
-    assert!(factory.has_provider("anthropic"));
-    assert!(factory.has_provider("gemini"));
-    assert!(!factory.has_provider("nonexistent"));
-    
-    // Test getting transformers
-    let openai_transformer = factory.get_transformer("openai");
-    assert!(openai_transformer.is_ok());
-    
-    let nonexistent = factory.get_transformer("nonexistent");
-    assert!(nonexistent.is_err());
+    assert!(manager.is_provider_supported("openai"));
+    assert!(manager.is_provider_supported("anthropic"));
+    assert!(manager.is_provider_supported("gemini"));
+    assert!(!manager.is_provider_supported("nonexistent"));
     
     // Test listing providers
-    let providers = factory.list_providers();
+    let providers = manager.list_available_providers();
     assert!(providers.contains(&"openai".to_string()));
     assert!(providers.contains(&"anthropic".to_string()));
     assert!(providers.contains(&"gemini".to_string()));
+    
+    // Test the new direct conversion interfaces
+    let test_request = json!({
+        "model": "gpt-4",
+        "messages": create_test_messages(),
+        "temperature": 0.7
+    });
+    
+    // Test to_universal_request
+    let universal_request = manager.to_universal_request("openai", &test_request);
+    assert!(universal_request.is_ok());
+    
+    // Test from_universal_request
+    let universal = universal_request.unwrap();
+    let provider_request = manager.from_universal_request("anthropic", &universal);
+    assert!(provider_request.is_ok());
 }
 
 #[test]
@@ -553,13 +558,12 @@ fn test_complex_tool_arguments() {
 
 #[test]
 fn test_error_handling() {
-    let factory = TransformerFactory::new();
+    let manager = TransformerManager::new();
     
     // Test invalid JSON
-    let transformer = factory.get_transformer("openai").unwrap();
     let invalid_json = json!({"invalid": "structure"});
     
-    let result = transformer.to_universal_request(&invalid_json);
+    let result = manager.to_universal_request("openai", &invalid_json);
     assert!(result.is_err());
     
     // Test malformed tool definition
@@ -569,8 +573,17 @@ fn test_error_handling() {
         "tools": [{"invalid": "tool"}]  // Missing required fields
     });
     
-    let result = transformer.to_universal_request(&malformed_request);
+    let result = manager.to_universal_request("openai", &malformed_request);
     // This might succeed or fail depending on implementation details
     // The important thing is that it doesn't panic
     assert!(result.is_ok() || result.is_err());
+    
+    // Test unsupported provider
+    let test_request = json!({
+        "model": "gpt-4",
+        "messages": create_test_messages()
+    });
+    
+    let result = manager.to_universal_request("nonexistent", &test_request);
+    assert!(result.is_err());
 }

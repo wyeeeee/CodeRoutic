@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use crate::transformers::error::{TransformerError, TransformerResult};
-use crate::transformers::provider_trait::*;
+use crate::transformers::providers::provider_trait::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct AnthropicRequest {
