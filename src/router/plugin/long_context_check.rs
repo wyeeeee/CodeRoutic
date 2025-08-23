@@ -2,7 +2,7 @@ use crate::config::types::Config;
 use crate::router::route_logic::{RouteRequest, Usage};
 
 pub fn check_long_context(
-    req: &RouteRequest,
+    _req: &RouteRequest,
     token_count: usize,
     config: &Config,
     last_usage: Option<&Usage>,
